@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Tatyana Zhykharieva](https://up.htmlacademy.ru/javascript/18/user/553969).
-* Наставник: `Неизвестно`.
+* Наставник: `Andrey Karyakin`.
 
 ---
 
