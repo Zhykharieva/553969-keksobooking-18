@@ -1,19 +1,13 @@
 'use strict';
 var TYPE_OF_ACCOMONDATION = ['palace', 'flat', 'house', 'bungalo'];
-var TIME_OF_CHECKIN = ['12:00', '13:00', '14:00'];
-var TIME_OF_CHECKOUT = ['12:00', '13:00', '14:00'];
+var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var TITLES = ['title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8'];
-var PRICE = [100, 2000, 300, 900, 568];
+var TITLES = ['title1', 'title2', 'title3', 'title4'];
 var DESCRIPTION = ['description1', 'description2', 'description3', 'description4', 'description5', 'description6', 'description7', 'description8'];
-var GUESTS = [1, 2, 3, 4, 5];
-var ROOMS = [1, 2, 3, 4, 5];
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-var MAP = document.querySelector('.map');
 var TOTAL_OBJECTS = 8;
 var START_COORD = 130;
 var FINISH_COORD = 630;
-MAP.classList.remove('map--faded');
 
 var createRandomNumber = function (min, max) {
   min = Math.ceil(min);
@@ -21,21 +15,34 @@ var createRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-var getRandomLengthArr = function (arr) {
-  return arr.slice(createRandomNumber(0, arr.length));
+var generateRandomNumberArray = function (limit, max) {
+  var arr = [];
+  for (var i = 0; i < limit; i++) {
+    arr[i] = createRandomNumber(1, max);
+  }
+  return arr;
+};
+
+var getRandomIndexArray = function (arr) {
+  return createRandomNumber(0, arr.length - 1);
+};
+
+var GUESTS = generateRandomNumberArray(10, 8);
+var ROOMS = generateRandomNumberArray(4, 5);
+var PRICE = generateRandomNumberArray(10, 9890);
+
+var getRandomSlice = function (arr) {
+  return arr.slice(getRandomIndexArray(arr));
 };
 
 var spliceRandomElem = function (arr) {
-  return arr.splice(createRandomNumber(0, arr.length - 1), 1);
+  return arr.splice(getRandomIndexArray(arr), 1);
 };
 
 var getAvatars = function () {
-  var number = 8;
   var avatars = [];
-
-  for (var i = 1; i <= number; i++) {
-    var img = 'img/' + 'avatars/' + 'user' + '0' + i + '.png';
-    avatars.push(img);
+  for (var i = 1; i <= TOTAL_OBJECTS; i++) {
+    avatars.push('img/' + 'avatars/' + 'user' + '0' + i + '.png');
   }
   return avatars;
 };
@@ -50,26 +57,27 @@ var getLocation = function () {
 var getOffer = function () {
   var currentLocation = getLocation();
   return {
-    title: TITLES[createRandomNumber(0, TITLES.length - 1)],
+    title: TITLES[getRandomIndexArray(TITLES)],
     address: currentLocation.x + ',' + currentLocation.y,
-    price: PRICE[createRandomNumber(0, PRICE.length - 1)],
-    type: TYPE_OF_ACCOMONDATION[createRandomNumber(0, TYPE_OF_ACCOMONDATION.length - 1)],
-    rooms: ROOMS[createRandomNumber(0, ROOMS.length - 1)],
-    guests: GUESTS[createRandomNumber(0, GUESTS.length - 1)],
-    checkin: TIME_OF_CHECKIN[createRandomNumber(0, TIME_OF_CHECKIN.length - 1)],
-    checkout: TIME_OF_CHECKOUT[createRandomNumber(0, TIME_OF_CHECKOUT.length - 1)],
-    features: getRandomLengthArr(FEATURES),
-    description: DESCRIPTION[createRandomNumber(0, DESCRIPTION.length - 1)],
-    photos: getRandomLengthArr(PHOTOS),
+    price: PRICE[getRandomIndexArray(PRICE)],
+    type: TYPE_OF_ACCOMONDATION[getRandomIndexArray(TYPE_OF_ACCOMONDATION)],
+    rooms: ROOMS[getRandomIndexArray(ROOMS)],
+    guests: GUESTS[getRandomIndexArray(GUESTS)],
+    checkin: TIMES[getRandomIndexArray(TIMES)],
+    checkout: TIMES[getRandomIndexArray(TIMES)],
+    features: getRandomSlice(FEATURES),
+    description: DESCRIPTION[getRandomIndexArray(DESCRIPTION)],
+    photos: getRandomSlice(PHOTOS),
 
   };
 };
+
 var createPinsArray = function () {
   var pins = [];
   var avatars = getAvatars();
   var newAvatars = avatars.slice();
-  for (var i = 0; i < TOTAL_OBJECTS; i++) {
 
+  for (var i = 0; i < TOTAL_OBJECTS; i++) {
     pins.push(
         {
           author: spliceRandomElem(newAvatars),
@@ -84,28 +92,32 @@ var createPinsArray = function () {
 
 var getPin = function (ads) {
 
-  var templatePin = document.querySelector('#pin')
-  .content
-  .querySelector('.map__pin');
+  var resultElement = TEMPLATE_PIN.cloneNode(true);
+  var pinPictureElem = resultElement.querySelector('img');
 
-  var resultElement = templatePin.cloneNode(true);
+  resultElement.style = 'left:' + (ads.location.x + TEMPLATE_PIN.offsetWidth / 2) + 'px ;' + ' top:' + (ads.location.y - TEMPLATE_PIN.offsetHeight) + 'px';
 
-  resultElement.style.left = (ads.location.x + templatePin.offsetWidth / 2) + 'px';
-  resultElement.style.top = (ads.location.y - templatePin.offsetHeight) + 'px';
-  resultElement.querySelector('img').alt = ads.offer.title;
-  resultElement.querySelector('img').src = ads.author;
+  pinPictureElem.alt = ads.offer.title;
+  pinPictureElem.src = ads.author;
 
   return resultElement;
 };
 
 var createPinList = function () {
-  var templatePins = MAP.querySelector('.map__pins');
+
   var result = createPinsArray();
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < result.length; i++) {
-    fragment.appendChild(getPin(result[i]));
-  }
-  templatePins.appendChild(fragment);
+  result.forEach(function (item) {
+    fragment.appendChild(getPin(item));
+  });
+
+  TEMPLATE_PINS.appendChild(fragment);
 };
+var MAP = document.querySelector('.map');
+MAP.classList.remove('map--faded');
+var TEMPLATE_PINS = MAP.querySelector('.map__pins');
+var TEMPLATE_PIN = document.querySelector('#pin')
+  .content
+  .querySelector('.map__pin');
 createPinList();
 
