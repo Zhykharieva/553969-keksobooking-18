@@ -32,8 +32,8 @@ var DESCRIPTION = createString(8, 'description', '');
 var PHOTOS = createString(8, 'http://o0.github.io/assets/images/tokyo/hotel', '.jpg');
 var AVATARS = createString(8, 'img/avatars/user0', '.png');
 
-var getRandomIndexArray = function (arr) {
-  return createRandomNumber(0, arr.length - 1);
+var getRandomElement = function (arr) {
+  return arr[createRandomNumber(0, arr.length - 1)];
 };
 
 var GUESTS = generateRandomNumberArray(10, 8);
@@ -41,11 +41,11 @@ var ROOMS = generateRandomNumberArray(4, 5);
 var PRICE = generateRandomNumberArray(10, 9890);
 
 var getRandomSlice = function (arr) {
-  return arr.slice(getRandomIndexArray(arr));
+  return arr.slice(getRandomElement(arr));
 };
 
 var spliceRandomElem = function (arr) {
-  return arr.splice(getRandomIndexArray(arr), 1);
+  return arr.splice(getRandomElement(arr), 1);
 };
 
 var getLocation = function () {
@@ -58,16 +58,16 @@ var getLocation = function () {
 var getOffer = function () {
   var currentLocation = getLocation();
   return {
-    title: getRandomIndexArray(TITLES),
+    title: getRandomElement(TITLES),
     address: currentLocation.x + ',' + currentLocation.y,
-    price: getRandomIndexArray(PRICE),
-    type: getRandomIndexArray(TYPE_OF_ACCOMONDATION),
-    rooms: getRandomIndexArray(ROOMS),
-    guests: getRandomIndexArray(GUESTS),
-    checkin: getRandomIndexArray(TIMES),
-    checkout: getRandomIndexArray(TIMES),
+    price: getRandomElement(PRICE),
+    type: getRandomElement(TYPE_OF_ACCOMONDATION),
+    rooms: getRandomElement(ROOMS),
+    guests: getRandomElement(GUESTS),
+    checkin: getRandomElement(TIMES),
+    checkout: getRandomElement(TIMES),
     features: getRandomSlice(FEATURES),
-    description: getRandomIndexArray(DESCRIPTION),
+    description: getRandomElement(DESCRIPTION),
     photos: getRandomSlice(PHOTOS),
 
   };
