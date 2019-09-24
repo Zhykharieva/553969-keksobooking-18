@@ -73,7 +73,7 @@ var getOffer = function () {
   };
 };
 
-var createPins = function (number) {
+var createPinsDatas = function (number) {
   var pins = [];
   var currentAvatars = AVATARS.slice();
 
@@ -105,7 +105,7 @@ var getPin = function (ads) {
 
 var createPinList = function () {
 
-  var result = createPins(8);
+  var result = createPinsDatas(8);
   var fragment = document.createDocumentFragment();
   result.forEach(function (item) {
     fragment.appendChild(getPin(item));
