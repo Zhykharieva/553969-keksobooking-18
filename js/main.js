@@ -5,7 +5,7 @@ var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditio
 var START_COORD = 130;
 var FINISH_COORD = 630;
 
-var createRandomNumber = function (min, max) {
+var getRandomBetween = function (min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -14,26 +14,26 @@ var createRandomNumber = function (min, max) {
 var generateRandomNumberArray = function (limit, max) {
   var arr = [];
   for (var i = 0; i < limit; i++) {
-    arr.push(createRandomNumber(1, max));
+    arr.push(getRandomBetween(1, max));
   }
   return arr;
 };
 
-var createString = function (number, content1, content2) {
+var createNumberedList = function (count, prefix, suffix) {
   var arr = [];
-  for (var i = 1; i <= number; i++) {
-    arr.push(content1 + i + content2);
+  for (var i = 1; i <= count; i++) {
+    arr.push(prefix + i + suffix);
   }
   return arr;
 };
 
-var TITLES = createString(5, 'title', '');
-var DESCRIPTION = createString(8, 'description', '');
-var PHOTOS = createString(8, 'http://o0.github.io/assets/images/tokyo/hotel', '.jpg');
-var AVATARS = createString(8, 'img/avatars/user0', '.png');
+var TITLES = createNumberedList(5, 'title', '');
+var DESCRIPTION = createNumberedList(8, 'description', '');
+var PHOTOS = createNumberedList(8, 'http://o0.github.io/assets/images/tokyo/hotel', '.jpg');
+var AVATARS = createNumberedList(8, 'img/avatars/user0', '.png');
 
 var getRandomElement = function (arr) {
-  return arr[createRandomNumber(0, arr.length - 1)];
+  return arr[getRandomBetween(0, arr.length - 1)];
 };
 
 var GUESTS = generateRandomNumberArray(10, 8);
@@ -50,8 +50,8 @@ var spliceRandomElem = function (arr) {
 
 var getLocation = function () {
   return {
-    x: createRandomNumber(0, MAP.offsetWidth),
-    y: createRandomNumber(START_COORD, FINISH_COORD),
+    x: getRandomBetween(0, MAP.offsetWidth),
+    y: getRandomBetween(START_COORD, FINISH_COORD),
   };
 };
 
@@ -73,7 +73,7 @@ var getOffer = function () {
   };
 };
 
-var createPinsDatas = function (number) {
+var createPinsData = function (number) {
   var pins = [];
   var currentAvatars = AVATARS.slice();
 
@@ -90,7 +90,7 @@ var createPinsDatas = function (number) {
   return pins;
 };
 
-var getPin = function (ads) {
+var getPinElement = function (ads) {
 
   var resultElement = TEMPLATE_PIN.cloneNode(true);
   var pinPictureElem = resultElement.querySelector('img');
@@ -103,12 +103,12 @@ var getPin = function (ads) {
   return resultElement;
 };
 
-var createPinList = function () {
+var renderPins = function () {
 
-  var result = createPinsDatas(8);
+  var result = createPinsData(8);
   var fragment = document.createDocumentFragment();
   result.forEach(function (item) {
-    fragment.appendChild(getPin(item));
+    fragment.appendChild(getPinElement(item));
   });
 
   TEMPLATE_PINS.appendChild(fragment);
@@ -118,6 +118,5 @@ MAP.classList.remove('map--faded');
 var TEMPLATE_PINS = MAP.querySelector('.map__pins');
 var TEMPLATE_PIN = document.querySelector('#pin')
   .content
-  .querySelector('.map__pin');
-createPinList();
+  .querySelector('.map__pin'); renderPins();
 
