@@ -2,10 +2,6 @@
 var TYPE_OF_ACCOMONDATION = ['palace', 'flat', 'house', 'bungalo'];
 var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var TITLES = ['title1', 'title2', 'title3', 'title4'];
-var DESCRIPTION = ['description1', 'description2', 'description3', 'description4', 'description5', 'description6', 'description7', 'description8'];
-var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-var TOTAL_OBJECTS = 8;
 var START_COORD = 130;
 var FINISH_COORD = 630;
 
@@ -18,10 +14,23 @@ var createRandomNumber = function (min, max) {
 var generateRandomNumberArray = function (limit, max) {
   var arr = [];
   for (var i = 0; i < limit; i++) {
-    arr[i] = createRandomNumber(1, max);
+    arr.push(createRandomNumber(1, max));
   }
   return arr;
 };
+
+var createString = function (number, content1, content2) {
+  var arr = [];
+  for (var i = 1; i <= number; i++) {
+    arr.push(content1 + i + content2);
+  }
+  return arr;
+};
+
+var TITLES = createString(5, 'title', '');
+var DESCRIPTION = createString(8, 'description', '');
+var PHOTOS = createString(8, 'http://o0.github.io/assets/images/tokyo/hotel', '.jpg');
+var AVATARS = createString(8, 'img/avatars/user0', '.png');
 
 var getRandomIndexArray = function (arr) {
   return createRandomNumber(0, arr.length - 1);
@@ -39,14 +48,6 @@ var spliceRandomElem = function (arr) {
   return arr.splice(getRandomIndexArray(arr), 1);
 };
 
-var getAvatars = function () {
-  var avatars = [];
-  for (var i = 1; i <= TOTAL_OBJECTS; i++) {
-    avatars.push('img/' + 'avatars/' + 'user' + '0' + i + '.png');
-  }
-  return avatars;
-};
-
 var getLocation = function () {
   return {
     x: createRandomNumber(0, MAP.offsetWidth),
@@ -57,30 +58,29 @@ var getLocation = function () {
 var getOffer = function () {
   var currentLocation = getLocation();
   return {
-    title: TITLES[getRandomIndexArray(TITLES)],
+    title: getRandomIndexArray(TITLES),
     address: currentLocation.x + ',' + currentLocation.y,
-    price: PRICE[getRandomIndexArray(PRICE)],
-    type: TYPE_OF_ACCOMONDATION[getRandomIndexArray(TYPE_OF_ACCOMONDATION)],
-    rooms: ROOMS[getRandomIndexArray(ROOMS)],
-    guests: GUESTS[getRandomIndexArray(GUESTS)],
-    checkin: TIMES[getRandomIndexArray(TIMES)],
-    checkout: TIMES[getRandomIndexArray(TIMES)],
+    price: getRandomIndexArray(PRICE),
+    type: getRandomIndexArray(TYPE_OF_ACCOMONDATION),
+    rooms: getRandomIndexArray(ROOMS),
+    guests: getRandomIndexArray(GUESTS),
+    checkin: getRandomIndexArray(TIMES),
+    checkout: getRandomIndexArray(TIMES),
     features: getRandomSlice(FEATURES),
-    description: DESCRIPTION[getRandomIndexArray(DESCRIPTION)],
+    description: getRandomIndexArray(DESCRIPTION),
     photos: getRandomSlice(PHOTOS),
 
   };
 };
 
-var createPinsArray = function () {
+var createPins = function (number) {
   var pins = [];
-  var avatars = getAvatars();
-  var newAvatars = avatars.slice();
+  var currentAvatars = AVATARS.slice();
 
-  for (var i = 0; i < TOTAL_OBJECTS; i++) {
+  for (var i = 0; i < number; i++) {
     pins.push(
         {
-          author: spliceRandomElem(newAvatars),
+          author: spliceRandomElem(currentAvatars),
           offer: getOffer(),
           location: getLocation(),
 
@@ -105,7 +105,7 @@ var getPin = function (ads) {
 
 var createPinList = function () {
 
-  var result = createPinsArray();
+  var result = createPins(8);
   var fragment = document.createDocumentFragment();
   result.forEach(function (item) {
     fragment.appendChild(getPin(item));
