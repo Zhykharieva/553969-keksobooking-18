@@ -4,6 +4,24 @@ var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var MIN_Y = 130;
 var MAX_Y = 630;
+var TYPE_OF_HOUSING_LIST_MAP = {
+  'flat': 'Квартира',
+  'bungalo': 'Бунгало',
+  'house': 'Дом',
+  'palace': 'Дворец',
+};
+var MAP = document.querySelector('.map');
+MAP.classList.remove('map--faded');
+var TEMPLATE_PIN = document.querySelector('#pin')
+  .content
+  .querySelector('.map__pin');
+var TEMPLATE_PINS = MAP.querySelector('.map__pins');
+var HALF_PIN_WIDTH = TEMPLATE_PIN.offsetWidth / 2;
+var PINS_HEIGHT = TEMPLATE_PIN.offsetHeight;
+var SIMILAR_LIST_ELEMENT = MAP.querySelector('.map__filters-container');
+var SIMILAR_ELEM_TEMPLATE = document.querySelector('#card')
+    .content
+    .querySelector('.map__card');
 
 var getRandomBetween = function (min, max) {
   min = Math.ceil(min);
@@ -55,13 +73,6 @@ var getLocation = function () {
   };
 };
 
-var typeOfHousingListMap = {
-  'flat': 'Квартира',
-  'bungalo': 'Бунгало',
-  'house': 'Дом',
-  'palace': 'Дворец',
-};
-
 var getOffer = function (currentLocation) {
 
   return {
@@ -98,22 +109,10 @@ var createPinsData = function (number) {
   return pins;
 };
 
-var MAP = document.querySelector('.map');
-MAP.classList.remove('map--faded');
-var TEMPLATE_PIN = document.querySelector('#pin')
-  .content
-  .querySelector('.map__pin');
-var TEMPLATE_PINS = MAP.querySelector('.map__pins');
-var HALF_PIN_WIDTH = TEMPLATE_PIN.offsetWidth / 2;
-var PINS_HEIGHT = TEMPLATE_PIN.offsetHeight;
-
 var getPinElement = function (ads) {
-
   var resultElement = TEMPLATE_PIN.cloneNode(true);
   var pinPictureElem = resultElement.querySelector('img');
-
   resultElement.style = 'left:' + (ads.location.x + HALF_PIN_WIDTH) + 'px ;' + ' top:' + (ads.location.y - PINS_HEIGHT) + 'px';
-
   pinPictureElem.alt = ads.offer.title;
   pinPictureElem.src = ads.author;
 
@@ -121,7 +120,6 @@ var getPinElement = function (ads) {
 };
 
 var renderPins = function () {
-
   var result = createPinsData(8);
   var fragment = document.createDocumentFragment();
   result.forEach(function (item) {
@@ -131,26 +129,23 @@ var renderPins = function () {
   TEMPLATE_PINS.appendChild(fragment);
 };
 
-renderPins();
-
-var similarListElement = MAP.querySelector('.map__filters-container');
-
-var similarElemTemplate = document.querySelector('#card')
-    .content
-    .querySelector('.map__card');
+var getPictureTemplate = function (elem) {
+  var pictureTemplate = SIMILAR_ELEM_TEMPLATE.querySelector('.popup__photo');
+  var picture = pictureTemplate.cloneNode(true);
+  picture.className = 'popup__photo';
+  picture.src = elem;
+  picture.width = 45;
+  picture.height = 40;
+  picture.alt = 'Фотография жилья';
+  return picture;
+};
 
 var renderPhotos = function (node, ads) {
   var photoCardElem = node.querySelector('.popup__photos');
+  photoCardElem.innerHTML = '';
   var fragment = document.createDocumentFragment();
-
-  ads.offer.photos.forEach(function (elem) {
-    var picture = document.createElement('img');
-    picture.className = 'popup__photo';
-    picture.src = elem;
-    picture.width = 45;
-    picture.height = 40;
-    fragment.appendChild(picture);
-
+  ads.offer.photos.forEach(function (item) {
+    fragment.appendChild(getPictureTemplate(item));
   });
   photoCardElem.appendChild(fragment);
 
@@ -158,31 +153,31 @@ var renderPhotos = function (node, ads) {
 
 var renderFeatures = function (elem, ads) {
   var featuresElem = elem.querySelector('.popup__features');
-  var featuresCont = '';
-  ads.offer.features.forEach(function (feature) {
-    featuresCont += '<li class="popup__feature popup__feature--' + feature + '" ></li>';
+  var currentFeatures = [];
+  currentFeatures = ads.offer.features;
+  var resultFeatures = [];
+  currentFeatures.forEach(function (item) {
+    resultFeatures.push('<li class="popup__feature popup__feature--' + item + '" ></li>');
   });
-  featuresElem.innerHTML = featuresCont;
+  featuresElem.innerHTML = resultFeatures.join('');
 };
 
-
-var renderCard = function () {
-  var pinsArray = createPinsData(8);
-  var pinsElem = pinsArray[0];
-  var cardElement = similarElemTemplate.cloneNode(true);
-  cardElement.querySelector('.popup__title').textContent = pinsElem.offer.title;
-  cardElement.querySelector('.popup__text--address').textContent = pinsElem.offer.address;
-  cardElement.querySelector('.popup__text--price').textContent = pinsElem.offer.price + '₽/ночь';
-  cardElement.querySelector('.popup__type').textContent = typeOfHousingListMap[pinsElem.offer.type];
-  cardElement.querySelector('.popup__text--capacity').textContent = pinsElem.offer.rooms + ' комнаты для ' + pinsElem.offer.guests + ' гостей';
-  cardElement.querySelector('.popup__text--time ').textContent = 'Заезд после ' + pinsElem.offer.checkin + ', выезд до ' + pinsElem.offer.checkout + '.';
-  renderFeatures(cardElement, pinsElem);
-  cardElement.querySelector('.popup__description').textContent = pinsElem.offer.description;
-  cardElement.querySelector('.popup__photos').innerHTML = '';
-  renderPhotos(cardElement, pinsElem);
+var renderCard = function (cardData) {
+  var cardElement = SIMILAR_ELEM_TEMPLATE.cloneNode(true);
+  cardElement.querySelector('.popup__title').textContent = cardData.offer.title;
+  cardElement.querySelector('.popup__text--address').textContent = cardData.offer.address;
+  cardElement.querySelector('.popup__text--price').textContent = cardData.offer.price + '₽/ночь';
+  cardElement.querySelector('.popup__type').textContent = TYPE_OF_HOUSING_LIST_MAP[cardData.offer.type];
+  cardElement.querySelector('.popup__text--capacity').textContent = cardData.offer.rooms + ' комнаты для ' + cardData.offer.guests + ' гостей';
+  cardElement.querySelector('.popup__text--time ').textContent = 'Заезд после ' + cardData.offer.checkin + ', выезд до ' + cardData.offer.checkout + '.';
+  renderFeatures(cardElement, cardData);
+  cardElement.querySelector('.popup__description').textContent = cardData.offer.description;
+  renderPhotos(cardElement, cardData);
   return cardElement;
 };
-
+var pinsArray = createPinsData(8);
 var fragment = document.createDocumentFragment();
-fragment.appendChild(renderCard());
-MAP.insertBefore(fragment, similarListElement);
+fragment.appendChild(renderCard(pinsArray[0]));
+MAP.insertBefore(fragment, SIMILAR_LIST_ELEMENT);
+
+renderPins();
