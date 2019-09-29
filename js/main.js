@@ -4,6 +4,7 @@ var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var MIN_Y = 130;
 var MAX_Y = 630;
+var TOTAL_PINS_NUMBER = 8;
 var TYPE_OF_HOUSING_LIST_MAP = {
   'flat': 'Квартира',
   'bungalo': 'Бунгало',
@@ -175,7 +176,7 @@ var renderCard = function (cardData) {
   renderPhotos(cardElement, cardData);
   return cardElement;
 };
-var pinsArray = createPinsData(8);
+var pinsArray = createPinsData(TOTAL_PINS_NUMBER);
 var fragment = document.createDocumentFragment();
 fragment.appendChild(renderCard(pinsArray[0]));
 MAP.insertBefore(fragment, SIMILAR_LIST_ELEMENT);
