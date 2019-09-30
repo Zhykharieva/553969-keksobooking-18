@@ -133,7 +133,6 @@ var renderPins = function () {
 var getPictureTemplate = function (elem) {
   var pictureTemplate = SIMILAR_ELEM_TEMPLATE.querySelector('.popup__photo');
   var picture = pictureTemplate.cloneNode(true);
-  // picture.description = description;
   picture.className = 'popup__photo';
   picture.src = elem;
   picture.width = 45;
