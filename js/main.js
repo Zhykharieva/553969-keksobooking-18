@@ -23,7 +23,7 @@ var SIMILAR_LIST_ELEMENT = MAP.querySelector('.map__filters-container');
 var SIMILAR_ELEM_TEMPLATE = document.querySelector('#card')
     .content
     .querySelector('.map__card');
-
+var PICTURE_TEMPLATE = SIMILAR_ELEM_TEMPLATE.querySelector('.popup__photo');
 var getRandomBetween = function (min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -44,6 +44,12 @@ var createNumberedList = function (count, prefix, suffix) {
     arr.push(prefix + i + suffix);
   }
   return arr;
+};
+
+var createNewFeaturesLi = function (arr1, arr2, prefix, suffix) {
+  arr1.map(function (item) {
+    arr2.push(prefix + item + suffix);
+  });
 };
 
 var TITLES = createNumberedList(5, 'title', '');
@@ -131,8 +137,8 @@ var renderPins = function () {
 };
 
 var getPictureTemplate = function (elem) {
-  var pictureTemplate = SIMILAR_ELEM_TEMPLATE.querySelector('.popup__photo');
-  var picture = pictureTemplate.cloneNode(true);
+
+  var picture = PICTURE_TEMPLATE.cloneNode(true);
   picture.className = 'popup__photo';
   picture.src = elem;
   picture.width = 45;
@@ -151,9 +157,7 @@ var renderPhotos = function (card) {
 
 var renderFeatures = function (features) {
   var resultFeatures = [];
-  features.forEach(function (item) {
-    resultFeatures.push('<li class="popup__feature popup__feature--' + item + '" ></li>');
-  });
+  createNewFeaturesLi(features, resultFeatures, '<li class="popup__feature popup__feature--', '" ></li>');
   return resultFeatures.join('');
 };
 
@@ -171,8 +175,9 @@ var renderCard = function (cardData) {
   cardElement.querySelector('.popup__text--time ').textContent = 'Заезд после ' + cardData.offer.checkin + ', выезд до ' + cardData.offer.checkout + '.';
   cardElement.querySelector('.popup__features').innerHTML = renderFeatures(currenFeatures);
   cardElement.querySelector('.popup__description').textContent = cardData.offer.description;
-  currentCardPhotoElement.innerHTML = '';
+  currentCardPhotoElement.querySelector('img').remove('img');
   currentCardPhotoElement.appendChild(renderPhotos(currentPhotos));
+
   return cardElement;
 };
 
