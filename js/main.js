@@ -175,7 +175,7 @@ var renderCard = function (cardData) {
   cardElement.querySelector('.popup__text--time ').textContent = 'Заезд после ' + cardData.offer.checkin + ', выезд до ' + cardData.offer.checkout + '.';
   cardElement.querySelector('.popup__features').innerHTML = renderFeatures(currenFeatures);
   cardElement.querySelector('.popup__description').textContent = cardData.offer.description;
-  currentCardPhotoElement.querySelector('img').remove('img');
+  currentCardPhotoElement.innerHTML = '';
   currentCardPhotoElement.appendChild(renderPhotos(currentPhotos));
 
   return cardElement;
