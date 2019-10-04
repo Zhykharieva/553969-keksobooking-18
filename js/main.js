@@ -1,5 +1,4 @@
 'use strict';
-var TYPE_OF_ACCOMONDATION = ['palace', 'flat', 'house', 'bungalo'];
 var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var MIN_Y = 130;
@@ -11,6 +10,7 @@ var TYPE_OF_HOUSING_LIST_MAP = {
   'house': 'Дом',
   'palace': 'Дворец',
 };
+var TYPE_OF_HOUSING = Object.keys(TYPE_OF_HOUSING_LIST_MAP);
 var MAP = document.querySelector('.map');
 
 var TEMPLATE_PIN = document.querySelector('#pin')
@@ -46,10 +46,12 @@ var createNumberedList = function (count, prefix, suffix) {
   return arr;
 };
 
-var createNewFeaturesLi = function (arr1, arr2, prefix, suffix) {
+var createNewFeaturesLi = function (arr1, prefix, suffix) {
+  var arr2 = [];
   arr1.map(function (item) {
     arr2.push(prefix + item + suffix);
   });
+  return arr2;
 };
 
 var TITLES = createNumberedList(5, 'title', '');
@@ -80,13 +82,13 @@ var getLocation = function () {
   };
 };
 
-var getOffer = function (currentLocation) {
+var getOffer = function (location) {
 
   return {
     title: getRandomElement(TITLES),
-    address: currentLocation.x + ',' + currentLocation.y,
+    address: [location.x, location.y].join(','),
     price: getRandomElement(PRICE),
-    type: getRandomElement(TYPE_OF_ACCOMONDATION),
+    type: getRandomElement(TYPE_OF_HOUSING),
     rooms: getRandomElement(ROOMS),
     guests: getRandomElement(GUESTS),
     checkin: getRandomElement(TIMES),
@@ -98,17 +100,17 @@ var getOffer = function (currentLocation) {
   };
 };
 
-var createPinsData = function (number) {
+var createPinsData = function (count) {
   var pins = [];
-  var currentAvatars = AVATARS.slice();
+  var avatars = AVATARS.slice();
 
-  for (var i = 0; i < number; i++) {
-    var currentLocation = getLocation();
+  for (var i = 0; i < count; i++) {
+    var location = getLocation();
     pins.push(
         {
-          author: spliceRandomElem(currentAvatars),
-          offer: getOffer(currentLocation),
-          location: currentLocation,
+          author: spliceRandomElem(avatars),
+          offer: getOffer(location),
+          location: location,
 
         });
   }
@@ -126,10 +128,9 @@ var getPinElement = function (ads) {
   return resultElement;
 };
 
-var renderPins = function () {
-  var result = createPinsData(8);
+var renderPins = function (arr) {
   var fragment = document.createDocumentFragment();
-  result.forEach(function (item) {
+  arr.forEach(function (item) {
     fragment.appendChild(getPinElement(item));
   });
 
@@ -156,9 +157,8 @@ var renderPhotos = function (card) {
 };
 
 var renderFeatures = function (features) {
-  var resultFeatures = [];
-  createNewFeaturesLi(features, resultFeatures, '<li class="popup__feature popup__feature--', '" ></li>');
-  return resultFeatures.join('');
+  var result = createNewFeaturesLi(features, '<li class="popup__feature popup__feature--', '" ></li>');
+  return result.join('');
 };
 
 var renderCard = function (cardData) {
@@ -184,10 +184,9 @@ var renderCard = function (cardData) {
 var createCard = function () {
   MAP.classList.remove('map--faded');
   var pinsArray = createPinsData(TOTAL_PINS_NUMBER);
-  var fragment = document.createDocumentFragment();
-  fragment.appendChild(renderCard(pinsArray[0]));
-  MAP.insertBefore(fragment, SIMILAR_LIST_ELEMENT);
+  renderPins(pinsArray);
+  MAP.insertBefore(renderCard(pinsArray[0]), SIMILAR_LIST_ELEMENT);
+
 };
 
-renderPins();
 createCard();
