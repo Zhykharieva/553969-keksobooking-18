@@ -10,6 +10,7 @@ var TYPE_OF_HOUSING_LIST_MAP = {
   'house': 'Дом',
   'palace': 'Дворец',
 };
+var DRAGGED = true;
 var TYPE_OF_HOUSING = Object.keys(TYPE_OF_HOUSING_LIST_MAP);
 var MAP = document.querySelector('.map');
 
@@ -168,8 +169,8 @@ var renderCard = function (cardData) {
   var currentPhotos = cardData.offer.photos;
   var currentCardPhotoElement = cardElement.querySelector('.popup__photos');
   cardElement.querySelector('.popup__title').textContent = cardData.offer.title;
-  cardElement.querySelector('.popup__text--address').textContent = cardData.offer.address;
-  cardElement.querySelector('.popup__text--price').textContent = cardData.offer.price + '₽/ночь';
+  cardElement.querySelector('.popup__text--ADDRESS').textContent = cardData.offer.ADDRESS;
+  cardElement.querySelector('.popup__text--PRICE_OF_HOUSING').textContent = cardData.offer.PRICE_OF_HOUSING + '₽/ночь';
   cardElement.querySelector('.popup__type').textContent = TYPE_OF_HOUSING_LIST_MAP[cardData.offer.type];
   cardElement.querySelector('.popup__text--capacity').textContent = cardData.offer.rooms + ' комнаты для ' + cardData.offer.guests + ' гостей';
   cardElement.querySelector('.popup__text--time ').textContent = 'Заезд после ' + cardData.offer.checkin + ', выезд до ' + cardData.offer.checkout + '.';
@@ -189,4 +190,166 @@ var createCard = function () {
 
 };
 
-createCard();
+// createCard();
+
+var ENTER_KEYCODE = 13;
+var ADS_FORM = document.querySelector('.ad-form');
+var ADDRESS = ADS_FORM.querySelector('#address');
+var PRICE_OF_HOUSING = ADS_FORM.querySelector('#price');
+var TYPE_OF_HOUSING_OPTION = ADS_FORM.querySelector('#type');
+var MAP_FILTERS = document.querySelector('.map__filters');
+var FORMS_FIELDS = ADS_FORM.querySelectorAll('fieldset');
+var MAP_FILTERS_FIELDS = MAP_FILTERS.querySelectorAll('select');
+var setFieldDisabled = function (data) {
+  data.forEach(function (elem) {
+    elem.setAttribute('disabled', 'disabled');
+  });
+};
+var MAIN_PIN = MAP.querySelector('.map__pin--main');
+var MAIN_PIN_HALF_WIDTH = MAIN_PIN.offsetWidth / 2;
+var MAIN_PIN_HEIGHT = MAIN_PIN.offsetHeight;
+
+var getCoordinatesPinMain = function () {
+  if (DRAGGED) {
+    x = Math.floor(parseInt((MAIN_PIN.style.left), 10) - MAIN_PIN_HALF_WIDTH);
+    y = Math.floor(parseInt((MAIN_PIN.style.top), 10) + MAIN_PIN_HEIGHT / 2);
+    return {
+      x: x,
+      y: y
+    };
+  } else {
+    var x = Math.floor(parseInt((MAIN_PIN.style.left), 10) - MAIN_PIN_HALF_WIDTH);
+    var y = Math.floor(parseInt((MAIN_PIN.style.top), 10) + MAIN_PIN_HEIGHT);
+    return {
+      x: x,
+      y: y
+    };
+
+  }
+
+};
+var setFieldAddress = function () {
+  var coord = getCoordinatesPinMain();
+  ADDRESS.value = coord.x + ', ' + coord.y;
+  ADDRESS.setAttribute('value', ADDRESS.value);
+
+};
+
+var setMinPriceToInput = function (mean) {
+
+  switch (mean) {
+    case 'bungalo':
+      setEquelPrice(0);
+      break;
+    case 'flat':
+      setEquelPrice(1000);
+      break;
+    case 'house':
+      setEquelPrice(5000);
+      break;
+    case 'palace':
+      setEquelPrice(10000);
+      break;
+
+  }
+};
+
+var setEquelPrice = function (number) {
+  PRICE_OF_HOUSING.setAttribute('min', number);
+  PRICE_OF_HOUSING.setAttribute('placeholder', number);
+};
+
+var onTypeAccomondationChoose = function () {
+  var mean = TYPE_OF_HOUSING_OPTION.value;
+  setMinPriceToInput(mean);
+};
+
+TYPE_OF_HOUSING_OPTION.addEventListener('click', onTypeAccomondationChoose);
+
+var removeFieldDisabled = function (data) {
+  data.forEach(function (elem) {
+    elem.removeAttribute('disabled');
+  });
+};
+
+var setInactiveMode = function () {
+  // DRAGGED = true;
+  setFieldDisabled(FORMS_FIELDS);
+  setFieldDisabled(MAP_FILTERS_FIELDS);
+  setFieldAddress();
+};
+
+
+var onMainPinPress = function () {
+  DRAGGED = false;
+  setFieldAddress();
+  MAP.classList.remove('map--faded');
+  removeFieldDisabled(FORMS_FIELDS);
+  removeFieldDisabled(MAP_FILTERS_FIELDS);
+  ADS_FORM.classList.remove('ad-form--disabled');
+
+};
+
+var onPopupEnterPress = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    DRAGGED = false;
+    onMainPinPress();
+  }
+};
+MAIN_PIN.addEventListener('mousedown', onMainPinPress);
+MAIN_PIN.addEventListener('keydown', onPopupEnterPress);
+
+var TIME_IN = ADS_FORM.querySelector('#timein');
+var TIME_OUT = ADS_FORM.querySelector('#timeout');
+
+var syncТimeInAndOut = function (timein, timeout) {
+  timein.addEventListener('change', function (evt) {
+    timeout.value = evt.target.value;
+  });
+  timeout.addEventListener('change', function (evt) {
+    timein.value = evt.target.value;
+  });
+};
+
+syncТimeInAndOut(TIME_IN, TIME_OUT);
+
+var ROOMS_OPTION = ADS_FORM.querySelector('#room_number');
+var ROOMS_CAPACITY = ADS_FORM.querySelector('#capacity');
+var SUBMIT = ADS_FORM.querySelector('.ad-form__submit');
+var applyOption = function (condition, message) {
+  if (condition) {
+    ROOMS_CAPACITY.setCustomValidity(message);
+    ROOMS_OPTION.setCustomValidity(message);
+  } else {
+    console.log('it is ok');
+  }
+};
+var onCountGuestsChange = function () {
+  var selectedNumber = ROOMS_CAPACITY.options[ROOMS_CAPACITY.selectedIndex];
+  var currentRoom = ROOMS_OPTION.options[ROOMS_OPTION.selectedIndex];
+  var currentCapacityValue = parseInt((selectedNumber.value), 10);
+  // var currentRoomValue = parseInt((currentRoom.value), 10);
+
+  switch (currentRoom.value) {
+    case '1':
+      applyOption(currentCapacityValue !== 1, 'для 1 гостя');
+      break;
+    case '2':
+      applyOption(currentCapacityValue !== 1 || currentCapacityValue !== 2, 'для 2 гостей или для 1 гостя');
+      break;
+    case '3':
+      applyOption(currentCapacityValue !== 1 || currentCapacityValue !== 2 || currentCapacityValue !== 3, 'для 3 гостей, для 2 гостей или для 1 гостя');
+      break;
+    case '100':
+      applyOption(currentCapacityValue !== 0, 'не для гостей');
+      break;
+  }
+
+};
+
+setInactiveMode();
+// ROOMS_OPTION.addEventListener('change', onCountGuestsChange);
+// ROOMS_CAPACITY.addEventListener('change', onCountGuestsChange);
+SUBMIT.addEventListener('click', onCountGuestsChange);
+
+
