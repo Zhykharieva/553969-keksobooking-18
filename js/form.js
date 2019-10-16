@@ -8,12 +8,13 @@
   var MAP_FILTERS = document.querySelector('.map__filters');
   var FORMS_FIELDS = ADS_FORM.querySelectorAll('fieldset');
   var MAP_FILTERS_FIELDS = MAP_FILTERS.querySelectorAll('select');
+
   var TIME_IN = ADS_FORM.querySelector('#timein');
   var TIME_OUT = ADS_FORM.querySelector('#timeout');
   var ROOMS_OPTION = ADS_FORM.querySelector('#room_number');
   var ROOMS_CAPACITY = ADS_FORM.querySelector('#capacity');
   var SUBMIT = ADS_FORM.querySelector('.ad-form__submit');
-  var MAIN_PIN = window.MAP.querySelector('.map__pin--main');
+  var MAIN_PIN = window.util.MAP.querySelector('.map__pin--main');
   var MAIN_PIN_HALF_WIDTH = MAIN_PIN.offsetWidth / 2;
   var MAIN_PIN_HEIGHT = MAIN_PIN.offsetHeight;
   var MAIN_PIN_HALF_HEIGHT = Math.floor(MAIN_PIN_HEIGHT / 2);
@@ -38,11 +39,17 @@
 
   };
 
+
   var setFieldAddress = function () {
     var getResultCoords = getCoordInactivePin();
     ADDRESS.value = inactiveMode ? getResultCoords.x + ', ' + getResultCoords.y : getResultCoords.x + ', ' + (getResultCoords.y + MAIN_PIN_HALF_HEIGHT);
   };
 
+  var setFieldDisabled = function (data) {
+    data.forEach(function (elem) {
+      elem.setAttribute('disabled', 'disabled');
+    });
+  };
   var removeFieldDisabled = function (data) {
     data.forEach(function (elem) {
       elem.removeAttribute('disabled');
@@ -54,6 +61,7 @@
     setFieldDisabled(FORMS_FIELDS);
     setFieldDisabled(MAP_FILTERS_FIELDS);
     setFieldAddress();
+
   };
 
 
@@ -61,11 +69,11 @@
     if (inactiveMode) {
       inactiveMode = false;
       setFieldAddress();
-      window.MAP.classList.remove('map--faded');
+      window.util.MAP.classList.remove('map--faded');
       removeFieldDisabled(FORMS_FIELDS);
       removeFieldDisabled(MAP_FILTERS_FIELDS);
       ADS_FORM.classList.remove('ad-form--disabled');
-      window.createPinsList();
+      window.map();
     }
   };
 
@@ -98,13 +106,9 @@
     }
   };
 
-  var setFieldDisabled = function (data) {
-    data.forEach(function (elem) {
-      elem.setAttribute('disabled', 'disabled');
-    });
-  };
+
   var onPopupEnterPress = function (evt) {
-    if (evt.keyCode === window.ENTER_KEYCODE & !inactiveMode) {
+    if (evt.keyCode === window.util.ENTER_KEYCODE & !inactiveMode) {
       onMainPinPress();
     }
   };
