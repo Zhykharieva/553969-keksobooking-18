@@ -2,7 +2,9 @@
 
 (function () {
   var SIMILAR_LIST_ELEMENT = window.util.MAP.querySelector('.map__filters-container');
+  var LOAD_URL = 'https://js.dump.academy/keksobooking/data';
   var pinsArray = [];
+
 
   var removeElement = function () {
     var card = window.util.MAP.querySelector('.map__card');
@@ -39,13 +41,18 @@
     }
   };
 
-  var addPinEventListeners = function () {
-    var PIN = window.util.MAP.querySelectorAll('.map__pin:not(.map__pin--main)');
-    for (var i = 0; i < PIN.length; i++) {
+  var removeAllPins = function () {
+    window.util.MAP.querySelectorAll('.map__pin:not(.map__pin--main)').forEach(function (elem) {
+      elem.remove();
+    });
+  };
 
-      if (PIN[i].className === 'map__pin') {
-        PIN[i].addEventListener('click', onPinOpen);
-        PIN[i].addEventListener('keydown', onEnterPress);
+  var addPinEventListeners = function () {
+    var pins = window.util.MAP.querySelectorAll('.map__pin:not(.map__pin--main)');
+    for (var i = 0; i < pins.length; i++) {
+      if (pins[i].className === 'map__pin') {
+        pins[i].addEventListener('click', onPinOpen);
+        pins[i].addEventListener('keydown', onEnterPress);
 
       }
     }
@@ -57,8 +64,14 @@
     addPinEventListeners();
   };
 
-  window.map = function () {
-    window.load(initData, window.error);
+  window.map = {
+    load: function () {
+      window.load('', 'GET', LOAD_URL, initData, window.error);
+    },
+    clean: function () {
+      removeElement();
+      removeAllPins();
+    }
   };
 
 
