@@ -3,8 +3,7 @@
 (function () {
   var TIMES = ['12:00', '13:00', '14:00'];
   var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-  var MIN_Y = 130;
-  var MAX_Y = 630;
+
 
   window.TYPE_OF_HOUSING_LIST_MAP = {
     'bungalo': 'Бунгало',

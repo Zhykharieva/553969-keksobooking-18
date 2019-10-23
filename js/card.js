@@ -44,7 +44,7 @@
     var currenFeatures = cardData.offer.features;
     var currentPhotos = cardData.offer.photos;
     var currentCardPhotoElement = cardElement.querySelector('.popup__photos');
-    cardElement.querySelector('.popup__avatar').src = cardData.author.avatar + ''; //TODO find more sophisticated way convert to String
+    cardElement.querySelector('.popup__avatar').src = cardData.author.avatar + '';
     cardElement.querySelector('.popup__title').textContent = cardData.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = cardData.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = cardData.offer.price + '₽/ночь';

@@ -1,9 +1,7 @@
 'use strict';
 
 (function () {
-  var URL = 'https://js.dump.academy/keksobooking/data';
-  window.load = function (onSuccess, onError) {
-
+  window.load = function (data, method, url, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
 
     xhr.responseType = 'json';
@@ -26,7 +24,9 @@
 
     xhr.timeout = 10000; // 10s
 
-    xhr.open('GET', URL);
-    xhr.send();
+    xhr.open(method, url);
+    xhr.send(data);
   };
+
+
 })();
