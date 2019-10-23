@@ -24,7 +24,6 @@
 
     var fragment = document.createDocumentFragment();
     for (var j = 0; j < arr.length; j++) {
-      // arr.forEach(function (item) {
       fragment.appendChild(getPinElement(j, arr[j]));
     }
 
