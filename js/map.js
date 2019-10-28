@@ -2,20 +2,20 @@
 
 (function () {
   var SIMILAR_LIST_ELEMENT = window.util.MAP.querySelector('.map__filters-container');
-  var LOAD_URL = 'https://js.dump.academy/keksobooking/data';
   var pinsArray = [];
-
-
+  var LOAD_URL = 'https://js.dump.academy/keksobooking/data';
   var removeElement = function () {
     var card = window.util.MAP.querySelector('.map__card');
     if (card) {
       card.remove(card);
     }
   };
+
   var onCardCreate = function (evt) {
     var elemId = evt.currentTarget.attributes.accommondationId.value;
     return window.util.MAP.insertBefore(window.card(pinsArray[elemId]), SIMILAR_LIST_ELEMENT);
   };
+
   var onPinOpen = function (evt) {
     removeElement();
     onCardCreate(evt);
@@ -60,7 +60,8 @@
 
   var initData = function (data) {
     pinsArray = data;
-    window.pin(pinsArray);
+    var newPins = window.filterSome(pinsArray);
+    window.pin(newPins);
     addPinEventListeners();
   };
 
@@ -73,6 +74,4 @@
       removeAllPins();
     }
   };
-
-
 })();

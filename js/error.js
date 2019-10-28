@@ -6,14 +6,12 @@
   .content
   .querySelector('.error');
 
-
   var resultElement = ERROR_MESSAGE.cloneNode(true);
   var onErrrorMessageEscPress = function (evt) {
     if (evt.keyCode === window.util.ESC_KEYCODE) {
       resultElement.remove(resultElement);
     }
   };
-
 
   window.error = function () {
     window.util.MAIN.insertBefore(resultElement, window.util.MAP);
