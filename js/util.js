@@ -10,6 +10,21 @@
   var MAIN_PIN_HALF_HEIGHT = Math.floor(MAIN_PIN_HEIGHT / 2);
   var ADDRESS = document.querySelector('#address');
   var MAIN = document.querySelector('main');
+  var DEBOUNCE_INTERVAL = 500;
+
+  var removeBlink = function (cb) {
+    var lastTimeout = null;
+
+    return function () {
+      var parameters = arguments;
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function () {
+        cb.apply(null, parameters);
+      }, DEBOUNCE_INTERVAL);
+    };
+  };
 
   window.util = {
     ENTER_KEYCODE: ENTER_KEYCODE,
@@ -21,6 +36,7 @@
     MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT,
     MAIN_PIN_HALF_HEIGHT: MAIN_PIN_HALF_HEIGHT,
     ADDRESS: ADDRESS,
+    debounce: removeBlink,
 
   };
 
