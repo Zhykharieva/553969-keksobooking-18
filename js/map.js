@@ -2,9 +2,10 @@
 
 (function () {
   var SIMILAR_LIST_ELEMENT = window.util.MAP.querySelector('.map__filters-container');
-  var pinsArray = [];
+  var pinsList = [];
   var filteredPinsList = [];
   var LOAD_URL = 'https://js.dump.academy/keksobooking/data';
+
   var removeElement = function () {
     var card = window.util.MAP.querySelector('.map__card');
     if (card) {
@@ -14,16 +15,7 @@
 
   var onCardCreate = function (evt) {
     var elemId = evt.currentTarget.attributes.accommondationId.value;
-    return window.util.MAP.insertBefore(window.card(pinsArray[elemId]), SIMILAR_LIST_ELEMENT);
-  };
-
-  var onPinOpen = function (evt) {
-    removeElement();
-    onCardCreate(evt);
-    evt.target.classList.add('map__pin--active');
-    var buttonClose = window.util.MAP.querySelector('.popup__close');
-    buttonClose.addEventListener('keydown', onEscPress);
-    buttonClose.addEventListener('click', onPopupClose);
+    return window.util.MAP.insertBefore(window.card(pinsList[elemId]), SIMILAR_LIST_ELEMENT);
   };
 
   var onEnterPress = function (evt) {
@@ -31,6 +23,7 @@
       onPinOpen();
     }
   };
+
   var onPopupClose = function () {
     var currentPin = window.util.MAP.querySelector('.map__pin--active');
     if (currentPin) {
@@ -40,11 +33,23 @@
     if (buttonClose.className === 'popup__close') {
       removeElement();
     }
+    buttonClose.removeEventListener('click', onPopupClose);
   };
+
   var onEscPress = function (evt) {
     if (evt.keyCode === window.util.ESC_KEYCODE) {
       onPopupClose();
+      document.removeEventListener('keydown', onEscPress);
     }
+  };
+
+  var onPinOpen = function (evt) {
+    removeElement();
+    onCardCreate(evt);
+    evt.target.classList.add('map__pin--active');
+    var buttonClose = window.util.MAP.querySelector('.popup__close');
+    document.addEventListener('keydown', onEscPress);
+    buttonClose.addEventListener('click', onPopupClose);
   };
 
   var removeAllPins = function () {
@@ -65,8 +70,8 @@
 
   var initData = function (data) {
     filteredPinsList = data;
-    pinsArray = window.filter(data.slice());
-    window.pin(pinsArray);
+    pinsList = window.filter(data.slice());
+    window.pin(pinsList);
     addPinEventListeners();
   };
 
