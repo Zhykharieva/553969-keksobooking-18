@@ -1,10 +1,10 @@
 'use strict';
 
 (function () {
-  var inactiveMode = true;
   var FORMS_FIELDS_ELEMENT = window.util.ADS_FORM.querySelectorAll('fieldset');
   var MAP_FILTERS_ELEMENT = document.querySelector('.map__filters');
   var MAP_FILTERS_FIELDS_ELEMENT = MAP_FILTERS_ELEMENT.querySelectorAll('select');
+  var inactiveMode = true;
 
   var getCoordInactivePin = function () {
     return {

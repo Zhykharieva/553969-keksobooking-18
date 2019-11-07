@@ -19,6 +19,8 @@
   var AVATAR_START_SRC = 'img/muffin-grey.svg';
   var CONTAINER_AVATAR_ELEMENT = window.util.ADS_FORM.querySelector('.ad-form-header__preview');
   var PREVIEW_ELEMENT = window.util.ADS_FORM.querySelector('.ad-form-header__preview img');
+  var START_COORD_X = 538;
+  var START_COORD_Y = 407;
   var MIN_PRICE_OF_ACCOMMONDATION_MAP = {
     'bungalo': 0,
     'flat': 1000,
@@ -78,15 +80,23 @@
     CONTAINER_AVATAR_ELEMENT.appendChild(PREVIEW_ELEMENT);
   };
 
+  var setMainPinDefaultCoord = function () {
+    window.util.MAIN_PIN.style.left = (START_COORD_X + window.util.MAIN_PIN_HALF_WIDTH) + 'px';
+    window.util.MAIN_PIN.style.top = (START_COORD_Y - window.util.MAIN_PIN_HALF_HEIGHT) + 'px';
+    window.util.ADDRESS.value = START_COORD_X + ', ' + START_COORD_Y;
+  };
+
   var resetForm = function () {
     window.util.ADS_FORM.reset();
     window.map.clean();
     window.mainPin();
     window.util.MAP.classList.add('map--faded');
+    window.util.ADS_FORM.classList.add('ad-form--disabled');
     removePhotos(window.util.ADS_FORM);
     removeErrorBorder(TITLE_ELEMENT);
     removeErrorBorder(PRICE_OF_HOUSING_ELEMENT);
     removeErrorBorder(ROOMS_CAPACITY_ELEMENT);
+    setMainPinDefaultCoord();
   };
 
   var onFormResetButtonPress = function (evt) {

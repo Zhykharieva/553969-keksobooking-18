@@ -21,9 +21,9 @@
 
   window.pin = function (arr) {
     var fragment = document.createDocumentFragment();
-    for (var j = 0; j < arr.length; j++) {
-      fragment.appendChild(getPinElement(j, arr[j]));
-    }
+    arr.forEach(function (item, j) {
+      fragment.appendChild(getPinElement(j, item));
+    });
     TEMPLATE_PINS_ELEMENT.appendChild(fragment);
   };
 

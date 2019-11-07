@@ -18,9 +18,9 @@
     return picture;
   };
 
-  var renderPhotos = function (card) {
+  var renderPhotos = function (cards) {
     var fragment = document.createDocumentFragment();
-    card.forEach(function (item) {
+    cards.forEach(function (item) {
       fragment.appendChild(getPictureTemplate(item));
     });
     return fragment;
