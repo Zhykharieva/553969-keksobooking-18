@@ -2,8 +2,10 @@
 
 (function () {
   var SIMILAR_LIST_ELEMENT = window.util.MAP.querySelector('.map__filters-container');
-  var pinsArray = [];
+  var pinsList = [];
+  var filteredPinsList = [];
   var LOAD_URL = 'https://js.dump.academy/keksobooking/data';
+
   var removeElement = function () {
     var card = window.util.MAP.querySelector('.map__card');
     if (card) {
@@ -12,32 +14,46 @@
   };
 
   var onCardCreate = function (evt) {
-    var elemId = evt.currentTarget.attributes.accommondationId.value;
-    return window.util.MAP.insertBefore(window.card(pinsArray[elemId]), SIMILAR_LIST_ELEMENT);
+    var elemId = evt.currentTarget.attributes.accommondationid.value;
+    return window.util.MAP.insertBefore(window.card(pinsList[elemId]), SIMILAR_LIST_ELEMENT);
+  };
+
+  var deletePinsActiveClass = function () {
+    var currentPin = window.util.MAP.querySelector('.map__pin--active');
+    if (currentPin) {
+      currentPin.classList.remove('map__pin--active');
+    }
+  };
+
+  var onPopupClose = function () {
+    deletePinsActiveClass();
+    var buttonClose = window.util.MAP.querySelector('.popup__close');
+    if (buttonClose.className === 'popup__close') {
+      removeElement();
+    }
+    buttonClose.removeEventListener('click', onPopupClose);
+  };
+
+  var onEscPress = function (evt) {
+    if (evt.keyCode === window.util.ESC_KEYCODE) {
+      onPopupClose();
+      document.removeEventListener('keydown', onEscPress);
+    }
   };
 
   var onPinOpen = function (evt) {
+    deletePinsActiveClass();
     removeElement();
     onCardCreate(evt);
+    evt.currentTarget.classList.add('map__pin--active');
     var buttonClose = window.util.MAP.querySelector('.popup__close');
-    buttonClose.addEventListener('keydown', onEscPress);
+    document.addEventListener('keydown', onEscPress);
     buttonClose.addEventListener('click', onPopupClose);
   };
 
   var onEnterPress = function (evt) {
     if (evt.keyCode === window.util.ENTER_KEYCODE) {
-      onPinOpen();
-    }
-  };
-  var onPopupClose = function () {
-    var buttonClose = window.util.MAP.querySelector('.popup__close');
-    if (buttonClose.className === 'popup__close') {
-      removeElement();
-    }
-  };
-  var onEscPress = function (evt) {
-    if (evt.keyCode === window.util.ESC_KEYCODE) {
-      onPopupClose();
+      onPinOpen(evt);
     }
   };
 
@@ -53,16 +69,19 @@
       if (pins[i].className === 'map__pin') {
         pins[i].addEventListener('click', onPinOpen);
         pins[i].addEventListener('keydown', onEnterPress);
-
       }
     }
   };
 
   var initData = function (data) {
-    pinsArray = data;
-    var newPins = window.filterSome(pinsArray);
-    window.pin(newPins);
+    filteredPinsList = data;
+    pinsList = window.filter(data.slice());
+    window.pin(pinsList);
     addPinEventListeners();
+  };
+
+  var changeFiltersFields = function () {
+    initData(filteredPinsList);
   };
 
   window.map = {
@@ -72,6 +91,8 @@
     clean: function () {
       removeElement();
       removeAllPins();
-    }
+    },
+    filterAfterLoad: changeFiltersFields,
   };
+
 })();
