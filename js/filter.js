@@ -68,9 +68,11 @@
   var onFilterChange = window.util.debounce(function () {
     window.map.clean();
     window.map.filterAfterLoad();
+
   }, DEBOUNCE_INTERVAL);
 
   window.filter = function (data) {
+
     return data.filter(function (item) {
       return checkOffer(item) &&
       filterByType(item) &&
@@ -80,6 +82,7 @@
       filterByFeateres(item);
     })
     .slice(0, NUMBER_PINS_ON_MAP);
+
   };
 
   MAP_FILTER_CONTAINER_ELEMENT.addEventListener('change', onFilterChange);

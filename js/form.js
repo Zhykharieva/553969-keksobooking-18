@@ -109,6 +109,10 @@
 
   var showSuccessMessage = function () {
     window.util.MAIN.insertBefore(resultSuccessElement, window.util.MAP);
+    if (resultSuccessElement) {
+      resultSuccessElement.setAttribute('tabindex', -1);
+      resultSuccessElement.focus();
+    }
     document.addEventListener('keydown', onSuccessMessageEscPress);
     document.addEventListener('click', onSuccessMessageClick);
   };

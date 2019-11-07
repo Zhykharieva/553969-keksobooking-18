@@ -14,21 +14,19 @@
   };
 
   var onCardCreate = function (evt) {
-    var elemId = evt.currentTarget.attributes.accommondationId.value;
+    var elemId = evt.currentTarget.attributes.accommondationid.value;
     return window.util.MAP.insertBefore(window.card(pinsList[elemId]), SIMILAR_LIST_ELEMENT);
   };
 
-  var onEnterPress = function (evt) {
-    if (evt.keyCode === window.util.ENTER_KEYCODE) {
-      onPinOpen();
-    }
-  };
-
-  var onPopupClose = function () {
+  var deletePinsActiveClass = function () {
     var currentPin = window.util.MAP.querySelector('.map__pin--active');
     if (currentPin) {
       currentPin.classList.remove('map__pin--active');
     }
+  };
+
+  var onPopupClose = function () {
+    deletePinsActiveClass();
     var buttonClose = window.util.MAP.querySelector('.popup__close');
     if (buttonClose.className === 'popup__close') {
       removeElement();
@@ -44,12 +42,19 @@
   };
 
   var onPinOpen = function (evt) {
+    deletePinsActiveClass();
     removeElement();
     onCardCreate(evt);
-    evt.target.classList.add('map__pin--active');
+    evt.currentTarget.classList.add('map__pin--active');
     var buttonClose = window.util.MAP.querySelector('.popup__close');
     document.addEventListener('keydown', onEscPress);
     buttonClose.addEventListener('click', onPopupClose);
+  };
+
+  var onEnterPress = function (evt) {
+    if (evt.keyCode === window.util.ENTER_KEYCODE) {
+      onPinOpen(evt);
+    }
   };
 
   var removeAllPins = function () {
